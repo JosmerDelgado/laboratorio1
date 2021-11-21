@@ -20,9 +20,11 @@ public class ProjectDAO implements IDAO<Project>{
             connection = ConnectionManager.conect();
             //2 Crear una sentencia
 
-            sentenciaPS = connection.prepareStatement("INSERT INTO PROJECT (NAME, COMPANY_ID) VALUES(?,?)");
+            sentenciaPS = connection.prepareStatement("INSERT INTO PROJECT (NAME, COMPANY_ID, ID) VALUES(?,?,?)");
             sentenciaPS.setString(1,project.getName());
             sentenciaPS.setInt(2,project.getCompanyId());
+            sentenciaPS.setInt(3,project.getId());
+
 
             //3 Ejecutar una sentencia SQL
             int registrosModificados = sentenciaPS.executeUpdate();

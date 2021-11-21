@@ -19,8 +19,9 @@ public class CompanyDAO implements IDAO<Company>{
             connection = ConnectionManager.conect();
             //2 Crear una sentencia
 
-            sentenciaPS = connection.prepareStatement("INSERT INTO COMPANY (NAME) VALUES(?)");
+            sentenciaPS = connection.prepareStatement("INSERT INTO COMPANY (NAME, ID) VALUES(?,?)");
             sentenciaPS.setString(1,company.getName());
+            sentenciaPS.setInt(2,company.getId());
 
             //3 Ejecutar una sentencia SQL
             int registrosModificados = sentenciaPS.executeUpdate();

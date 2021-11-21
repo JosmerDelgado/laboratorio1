@@ -20,10 +20,49 @@ public class EmployeeDAO implements IDAO<Employee> {
             connection = ConnectionManager.conect();
             //2 Crear una sentencia
 
-            sentenciaPS = connection.prepareStatement("INSERT INTO EMPLOYEE (NAME, ID, LAST_NAME) VALUES(?,?,?)");
+            sentenciaPS = connection.prepareStatement("INSERT INTO EMPLOYEE (NAME, ID, LAST_NAME, RATE_PER_HOUR) VALUES(?,?,?,?)");
             sentenciaPS.setString(1,persona.getName());
             sentenciaPS.setInt(2,persona.getIdentityNumber());
             sentenciaPS.setString(3,persona.getLastName());
+            sentenciaPS.setDouble(4,persona.getRatePerHour());
+
+
+            //3 Ejecutar una sentencia SQL
+            int registrosModificados = sentenciaPS.executeUpdate();
+            System.out.println("Registros agregados: " + registrosModificados);
+
+            sentenciaPS.close();
+
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            throw new DAOException("SQL Employee DAO Error");
+
+        } finally {
+            try {
+                connection.close();
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+                throw new DAOException("SQL Employee DAO Error on close");
+
+            }
+        }
+    }
+
+    public void createAndAssign(Employee persona, int projectId) throws DAOException {
+        Connection connection = null;
+
+        PreparedStatement sentenciaPS;
+        try {
+            //1 Levantar el driver y Conectarnos
+            connection = ConnectionManager.conect();
+            //2 Crear una sentencia
+
+            sentenciaPS = connection.prepareStatement("INSERT INTO EMPLOYEE (NAME, ID, LAST_NAME, RATE_PER_HOUR, PROJECT_ID) VALUES(?,?,?,?,?)");
+            sentenciaPS.setString(1,persona.getName());
+            sentenciaPS.setInt(2,persona.getIdentityNumber());
+            sentenciaPS.setString(3,persona.getLastName());
+            sentenciaPS.setDouble(4,persona.getRatePerHour());
+            sentenciaPS.setInt(5,projectId);
 
 
             //3 Ejecutar una sentencia SQL

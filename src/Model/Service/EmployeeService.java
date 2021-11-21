@@ -7,13 +7,23 @@ import Model.Exceptions.ServiceException;
 
 import java.util.List;
 
-public class EmployeeSerice implements IService<Employee> {
+public class EmployeeService implements IService<Employee> {
 
     @Override
     public void create(Employee employee) throws ServiceException {
         EmployeeDAO employeeDAO = new EmployeeDAO();
         try {
             employeeDAO.create(employee);
+        } catch (DAOException e) {
+            e.printStackTrace();
+            throw new ServiceException("Error Service");
+        }
+    }
+
+    public void create(Employee employee, int projectId) throws ServiceException {
+        EmployeeDAO employeeDAO = new EmployeeDAO();
+        try {
+            employeeDAO.createAndAssign(employee, projectId);
         } catch (DAOException e) {
             e.printStackTrace();
             throw new ServiceException("Error Service");

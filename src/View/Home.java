@@ -1,5 +1,7 @@
 package View;
 
+import View.Components.Title;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -77,6 +79,7 @@ class OkCancelPanel extends JPanel {
         this.cancelBtn = new JButton("CANCELAR");
         this.add(okBtn);
         this.add(cancelBtn);
+
     }
 
     public JButton getOkBtn() {
@@ -100,40 +103,31 @@ public class Home extends JPanel implements ActionListener {
 
     private LoginForm loginFormPanel;
     private OkCancelPanel botoneraPanel;
+    private Title title;
+    private Manager manager;
 
-
-    public Home() {
+    public Home(Manager manager) {
+        this.manager = manager;
         armar();
     }
     public void armar() {
+        this.title = new Title("HOME");
         this.loginFormPanel = new LoginForm();
         this.botoneraPanel = new OkCancelPanel();
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
+        this.add(this.title);
         this.add(this.loginFormPanel);
         this.add(this.botoneraPanel);
 
         this.botoneraPanel.getOkBtn().addActionListener(this);
     }
 
-    public static void main(String[] args) {
-        JFrame prueba = new JFrame();
-        prueba.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        prueba.pack();
-        prueba.setVisible(true);
-        prueba.getContentPane().add(new Home());
-    }
-
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
         if(actionEvent.getSource() == this.botoneraPanel.getOkBtn()) {
-//            UsuarioDAO d = new UsuarioDAoImpl();
-//            String user = this.loginFormPanel.getUsernameTxt().getText();
-//            String pass = this.loginFormPanel.getPasswordTxt().getText();
-//            User u = d.findByUserAndPass(user, pass);
-//            if(u != null) {
-//                System.out.println("LOGIN EXITOSO");
-//            }
+            System.out.println("HERE");
+            this.manager.redirectToMain();
         }
     }
 
