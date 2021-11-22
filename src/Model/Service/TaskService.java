@@ -63,6 +63,16 @@ public class TaskService implements IService<Task>{
         }
     }
 
+    public List<Task> list(int projectid) throws ServiceException {
+        TaskDAO taskDAO = new TaskDAO();
+        try {
+            return taskDAO.list(projectid);
+        } catch (DAOException e) {
+            e.printStackTrace();
+            throw new ServiceException("Error Service");
+        }
+    }
+
     @Override
     public Task search(int id) throws ServiceException {
         TaskDAO taskDAO = new TaskDAO();

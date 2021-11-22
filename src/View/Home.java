@@ -114,6 +114,8 @@ public class Home extends JPanel implements ActionListener {
         this.title = new Title("HOME");
         this.loginFormPanel = new LoginForm();
         this.botoneraPanel = new OkCancelPanel();
+
+
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
         this.add(this.title);
@@ -121,6 +123,7 @@ public class Home extends JPanel implements ActionListener {
         this.add(this.botoneraPanel);
 
         this.botoneraPanel.getOkBtn().addActionListener(this);
+        this.botoneraPanel.getCancelBtn().addActionListener(this);
     }
 
     @Override
@@ -128,6 +131,11 @@ public class Home extends JPanel implements ActionListener {
         if(actionEvent.getSource() == this.botoneraPanel.getOkBtn()) {
             System.out.println("HERE");
             this.manager.redirectToMain();
+        }
+        if(actionEvent.getSource() == this.botoneraPanel.getCancelBtn()){
+            System.out.println();
+            JOptionPane.showMessageDialog(null, "My Goodness, this is so concise");
+
         }
     }
 

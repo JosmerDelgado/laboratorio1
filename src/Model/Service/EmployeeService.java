@@ -65,6 +65,16 @@ public class EmployeeService implements IService<Employee> {
         }
     }
 
+    public List<Employee> list(int projectId) throws ServiceException {
+        EmployeeDAO employeeDAO = new EmployeeDAO();
+        try {
+            return employeeDAO.list(projectId);
+        } catch (DAOException e) {
+            e.printStackTrace();
+            throw new ServiceException("Error Service");
+        }
+    }
+
     @Override
     public Employee search(int id) throws ServiceException {
         EmployeeDAO employeeDAO = new EmployeeDAO();

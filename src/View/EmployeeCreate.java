@@ -2,14 +2,18 @@ package View;
 
 import Model.Employee;
 import Model.Exceptions.ServiceException;
+import Model.Project;
 import Model.Service.EmployeeService;
+import Model.Service.ProjectService;
 import View.Components.InputWithLabel;
 import View.Components.MyButton;
+import View.Components.ProjectComboBox;
 import View.Components.Title;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Vector;
 
 
 public class EmployeeCreate  extends JPanel implements ActionListener {
@@ -24,7 +28,7 @@ public class EmployeeCreate  extends JPanel implements ActionListener {
     private InputWithLabel nameInputWithLabel;
     private InputWithLabel lastNameInputWithLabel;
     private InputWithLabel rateInputWithLabel;
-    private InputWithLabel projectInputWithLabel;
+    private ProjectComboBox projectComboBox;
 
 
     public EmployeeCreate(Manager manager) {
@@ -38,13 +42,23 @@ public class EmployeeCreate  extends JPanel implements ActionListener {
     }
 
     public void armar() {
+
+        Vector<Project> projectVector= new Vector<>();
+        ProjectService projectService = new ProjectService();
+
+        try {
+            projectVector.addAll(projectService.list());
+        } catch (ServiceException e) {
+            e.printStackTrace();
+        }
+
         this.title = new Title("New Employee");
 
         idInputWithLabel = new InputWithLabel("Document");
         nameInputWithLabel = new InputWithLabel("Name");
         lastNameInputWithLabel = new InputWithLabel("Last Name");
         rateInputWithLabel = new InputWithLabel("Rate Hourly");
-        projectInputWithLabel = new InputWithLabel("Project Assigned");
+        projectComboBox = new ProjectComboBox(projectVector);
 
 
         this.createEmployeeButton = new MyButton("Create Employee");
@@ -61,7 +75,7 @@ public class EmployeeCreate  extends JPanel implements ActionListener {
         this.add(nameInputWithLabel);
         this.add(lastNameInputWithLabel);
         this.add(rateInputWithLabel);
-        this.add(this.projectInputWithLabel);
+        this.add(this.projectComboBox);
 
         this.add(this.createEmployeeButton);
         // TODO: this can be part of a wrapper;
@@ -74,6 +88,15 @@ public class EmployeeCreate  extends JPanel implements ActionListener {
     }
 
     public void armar(int id) {
+        Vector<Project> projectVector= new Vector<>();
+        ProjectService projectService = new ProjectService();
+
+        try {
+            projectVector.addAll(projectService.list());
+        } catch (ServiceException e) {
+            e.printStackTrace();
+        }
+
         EmployeeService employeeService = new EmployeeService();
         Employee employee;
         try {
@@ -85,7 +108,7 @@ public class EmployeeCreate  extends JPanel implements ActionListener {
             nameInputWithLabel = new InputWithLabel("Name", employee.getName());
             lastNameInputWithLabel = new InputWithLabel("Last Name", employee.getLastName());
             rateInputWithLabel = new InputWithLabel("Rate Hourly", employee.getRatePerHour().toString());
-            projectInputWithLabel = new InputWithLabel("Project Assigned", employee.getProjectId().toString());
+            projectComboBox = new ProjectComboBox(projectVector, new Project(employee.getProjectId()));
 
 
             this.updateEmployeeButton = new MyButton("Update Employee");
@@ -102,7 +125,7 @@ public class EmployeeCreate  extends JPanel implements ActionListener {
             this.add(nameInputWithLabel);
             this.add(lastNameInputWithLabel);
             this.add(rateInputWithLabel);
-            this.add(this.projectInputWithLabel);
+            this.add(this.projectComboBox);
 
             this.add(this.updateEmployeeButton);
             // TODO: this can be part of a wrapper;
@@ -126,7 +149,7 @@ public class EmployeeCreate  extends JPanel implements ActionListener {
             String lastName = this.lastNameInputWithLabel.getInput().getText();
             Integer id = Integer.parseInt(this.idInputWithLabel.getInput().getText());
             Double rate = Double.parseDouble(this.rateInputWithLabel.getInput().getText());
-            int project = Integer.parseInt(this.projectInputWithLabel.getInput().getText());
+            int project = ((Project)this.projectComboBox.getSelectedItem()).getId();
 
             Employee employee = new Employee(name, lastName, rate, id, project);
             System.out.println(employee);
@@ -146,7 +169,8 @@ public class EmployeeCreate  extends JPanel implements ActionListener {
             String lastName = this.lastNameInputWithLabel.getInput().getText();
             Integer id = Integer.parseInt(this.idInputWithLabel.getInput().getText());
             Double rate = Double.parseDouble(this.rateInputWithLabel.getInput().getText());
-            int project = Integer.parseInt(this.projectInputWithLabel.getInput().getText());
+            int project = ((Project)this.projectComboBox.getSelectedItem()).getId();
+
 
             Employee employee = new Employee(name, lastName, rate, id, project);
             System.out.println(employee);

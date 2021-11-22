@@ -209,6 +209,58 @@ public class EmployeeDAO implements IDAO<Employee> {
         return listaPersonas;
     }
 
+    public List<Employee> list(int projectId) throws DAOException {
+
+        List<Employee> listaPersonas = new ArrayList<>();
+        Connection connection = null;
+        PreparedStatement sentenciaPS = null;
+
+
+        try {
+            //1 Levantar el driver y Conectarnos
+            connection = ConnectionManager.conect();
+
+            //2 Crear una sentencia
+
+            sentenciaPS = connection.prepareStatement("SELECT * FROM EMPLOYEE WHERE PROJECT_ID=?");
+            sentenciaPS.setInt(1,projectId);
+
+            //3 Ejecutar una sentencia SQL
+            ResultSet resultados =  sentenciaPS.executeQuery();
+
+            //4 Evaluar resultados
+            while(resultados.next()){
+
+                Employee persona = new Employee(resultados.getString("NAME"),
+                        resultados.getString("LAST_NAME"),
+                        resultados.getDouble("RATE_PER_HOUR"),
+                        resultados.getInt("ID"),
+                        resultados.getInt("PROJECT_ID"));
+
+
+                listaPersonas.add(persona);
+            }
+            resultados.close();
+            sentenciaPS.close();
+
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            throw new DAOException("SQL Employee DAO Error");
+
+        }finally {
+            try {
+                connection.close();
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+                throw new DAOException("SQL Employee DAO Error on close");
+
+            }
+        }
+
+        return listaPersonas;
+    }
+
+
     @Override
     public Employee search(int id) throws DAOException {
         Employee persona = null;

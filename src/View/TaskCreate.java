@@ -3,15 +3,17 @@ package View;
 import Model.Employee;
 import Model.Exceptions.ServiceException;
 import Model.Project;
+import Model.Service.EmployeeService;
+import Model.Service.ProjectService;
 import Model.Service.TaskService;
 import Model.Task;
-import View.Components.InputWithLabel;
-import View.Components.MyButton;
-import View.Components.Title;
+import View.Components.*;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
+import java.util.Vector;
 
 
 public class TaskCreate  extends JPanel implements ActionListener {
@@ -23,8 +25,8 @@ public class TaskCreate  extends JPanel implements ActionListener {
     private MyButton updateTaskButton;
     private InputWithLabel idInputWithLabel;
     private InputWithLabel titleInputWithLabel;
-    private InputWithLabel projectIdInputWithLabel;
-    private InputWithLabel employeeIdInputWithLabel;
+    private ProjectComboBox projectComboBox;
+    private EmployeeComboBox employeeComboBox;
     private InputWithLabel estimationInputWithLabel;
 
 
@@ -39,14 +41,30 @@ public class TaskCreate  extends JPanel implements ActionListener {
     }
 
     public void armar() {
+        Vector<Project> projectVector= new Vector<>();
+        ProjectService projectService = new ProjectService();
+
+        Vector<Employee> employeeVector = new Vector<>();
+        EmployeeService employeeService = new EmployeeService();
+
+
+        try {
+            List<Project> projectList = projectService.list();
+            projectVector.addAll(projectList);
+            employeeVector.addAll(employeeService.list(projectList.get(0).getId()));
+        } catch (ServiceException e) {
+            e.printStackTrace();
+        }
+
+
         this.title = new Title("New Task");
 
         idInputWithLabel = new InputWithLabel("ID");
         titleInputWithLabel = new InputWithLabel("Title");
 
         estimationInputWithLabel = new InputWithLabel("Estimation");
-        projectIdInputWithLabel = new InputWithLabel("Project (Project ID)");
-        employeeIdInputWithLabel = new InputWithLabel("Employee ID ");
+        projectComboBox = new ProjectComboBox(projectVector);
+        employeeComboBox = new EmployeeComboBox(employeeVector);
 
         this.createTaskButton = new MyButton("Create Task");
         // TODO: this can be part of a wrapper;
@@ -60,8 +78,8 @@ public class TaskCreate  extends JPanel implements ActionListener {
 
         this.add(idInputWithLabel);
         this.add(titleInputWithLabel);
-        this.add(projectIdInputWithLabel);
-        this.add(employeeIdInputWithLabel);
+        this.add(projectComboBox);
+        this.add(employeeComboBox);
         this.add(estimationInputWithLabel);
 
         this.add(this.createTaskButton);
@@ -78,6 +96,16 @@ public class TaskCreate  extends JPanel implements ActionListener {
         this.title = new Title("Update Task");
 
         TaskService taskService = new TaskService();
+        Vector<Project> projectVector= new Vector<>();
+        ProjectService projectService = new ProjectService();
+        Vector<Employee> employeeVector = new Vector<>();
+        EmployeeService employeeService = new EmployeeService();
+        try {
+            projectVector.addAll(projectService.list());
+            employeeVector.addAll(employeeService.list(id));
+        } catch (ServiceException e) {
+            e.printStackTrace();
+        }
 
         try {
             Task task = taskService.search(id);
@@ -87,10 +115,10 @@ public class TaskCreate  extends JPanel implements ActionListener {
             titleInputWithLabel = new InputWithLabel("Title", task.getTitle());
 
             estimationInputWithLabel = new InputWithLabel("Estimation", task.getEstimation().toString());
-            projectIdInputWithLabel = new InputWithLabel("Project (Project ID)", task.getProject().getId().toString());
-            employeeIdInputWithLabel = new InputWithLabel("Employee ID ", task.getAssigned().getIdentityNumber().toString());
+            projectComboBox = new ProjectComboBox(projectVector, task.getProject());
+            employeeComboBox = new EmployeeComboBox(employeeVector, task.getAssigned());
 
-            this.updateTaskButton = new MyButton("Create Task");
+            this.updateTaskButton = new MyButton("Update Task");
             // TODO: this can be part of a wrapper;
             this.buttonBack = new MyButton("Back");
 
@@ -102,8 +130,8 @@ public class TaskCreate  extends JPanel implements ActionListener {
 
             this.add(idInputWithLabel);
             this.add(titleInputWithLabel);
-            this.add(projectIdInputWithLabel);
-            this.add(employeeIdInputWithLabel);
+            this.add(projectComboBox);
+            this.add(employeeComboBox);
             this.add(estimationInputWithLabel);
 
             this.add(this.updateTaskButton);
@@ -127,8 +155,8 @@ public class TaskCreate  extends JPanel implements ActionListener {
         if(actionEvent.getSource() == this.createTaskButton){
             Integer id = Integer.parseInt(this.idInputWithLabel.getInput().getText());
             String title = this.titleInputWithLabel.getInput().getText();
-            Integer project = Integer.parseInt(this.projectIdInputWithLabel.getInput().getText());
-            Integer employee = Integer.parseInt(this.employeeIdInputWithLabel.getInput().getText());
+            Integer project = ((Project)this.projectComboBox.getSelectedItem()).getId();
+            Integer employee = this.employeeComboBox.getSelectedItem().getIdentityNumber();
             Integer estimation = Integer.parseInt(this.estimationInputWithLabel.getInput().getText());
             Task task = new Task(id, title);
             System.out.println(task);
@@ -145,8 +173,9 @@ public class TaskCreate  extends JPanel implements ActionListener {
         if(actionEvent.getSource() == this.updateTaskButton){
             Integer id = Integer.parseInt(this.idInputWithLabel.getInput().getText());
             String title = this.titleInputWithLabel.getInput().getText();
-            Integer projectId = Integer.parseInt(this.projectIdInputWithLabel.getInput().getText());
-            Integer employee = Integer.parseInt(this.employeeIdInputWithLabel.getInput().getText());
+            Integer projectId = ((Project)this.projectComboBox.getSelectedItem()).getId();
+
+            Integer employee = this.employeeComboBox.getSelectedItem().getIdentityNumber();
             Integer estimation = Integer.parseInt(this.estimationInputWithLabel.getInput().getText());
             Task task = new Task(id, title);
             System.out.println(task);

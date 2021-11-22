@@ -136,12 +136,13 @@ public class TaskDAO implements IDAO<Task>{
 
             //2 Crear una sentencia
 
-            sentenciaPS = connection.prepareStatement("UPDATE TASK SET TITLE=?, DESCRIPTION=?, ASSIGNED=?, ESTIMATION=? WHERE ID=?");
+            sentenciaPS = connection.prepareStatement("UPDATE TASK SET TITLE=?, DESCRIPTION=?, ASSIGNED=?, ESTIMATION=?, PROJECT_ID=? WHERE ID=?");
             sentenciaPS.setString(1,task.getTitle());
             sentenciaPS.setString(2,task.getDescription());
             sentenciaPS.setInt(3,task.getAssigned().getIdentityNumber());
             sentenciaPS.setInt(4,task.getEstimation());
-            sentenciaPS.setInt(5,task.getId());
+            sentenciaPS.setInt(5, task.getProject().getId());
+            sentenciaPS.setInt(6,task.getId());
 
             //3 Ejecutar una sentencia SQL
             int registrosModificados = sentenciaPS.executeUpdate();
@@ -232,6 +233,77 @@ public class TaskDAO implements IDAO<Task>{
 
         return listaTask;
     }
+
+    public List<Task> list(int projectId) throws DAOException {
+        List<Task> listaTask = new ArrayList<>();
+        Connection connection = null;
+        PreparedStatement sentencia = null;
+
+        try {
+            //1 Levantar el driver y Conectarnos
+            connection = ConnectionManager.conect();
+
+            //2 Crear una sentencia
+            sentencia = connection.prepareStatement("SELECT T.ID ID, T.TITLE TITLE, T.DESCRIPTION DESCRIPTION, T.ESTIMATION ESTIMATION," +
+                    "E.ID ID_EMPLOYEE, E.NAME NAME, E.LAST_NAME LAST_NAME, E.RATE_PER_HOUR RATE_PER_HOUR, E.PROJECT_ID EMPLOYEE_PROJECT " +
+                    "FROM TASK T JOIN EMPLOYEE E on E.ID = T.ASSIGNED WHERE T.PROJECT_ID = ?");
+            sentencia.setInt(1,projectId);
+            //3 Ejecutar una sentencia SQL
+            ResultSet resultados =  sentencia.executeQuery();
+            //4 Evaluar resultados
+            while(resultados.next()){
+
+//                int position = getTaskListed(listaTask, resultados.getInt("T.ID"));
+//                Employee employeeTask = new Employee(resultados.getString("E.NAME"),
+//                        resultados.getString("E.LAST_NAME"),
+//                        resultados.getDouble("E.RATE_PER_HOUR"),
+//                        resultados.getInt("ID_EMPLOYEE"));
+//                EventTask event = new EventTask(resultados.getString("ET.ACTION"),employeeTask);
+//                if(position == -1){
+                Employee persona = new Employee(resultados.getString("NAME"),
+                        resultados.getString("LAST_NAME"),
+                        resultados.getDouble("RATE_PER_HOUR"),
+                        resultados.getInt("ID_EMPLOYEE"),
+                        resultados.getInt("EMPLOYEE_PROJECT"));
+                List<EventTask> eventList = new ArrayList<>();
+//                    eventList.add(event);
+                Task task = new Task(resultados.getInt("ID"),
+                        resultados.getString("TITLE")
+                );
+                task.setDescription(resultados.getString("DESCRIPTION"));
+                task.setEstimation(resultados.getInt("ESTIMATION"));
+                task.setAssigned(persona);
+                task.setEventHistory(eventList);
+
+                listaTask.add(task);
+//                } else {
+////                    listaTask.get(position).addEventHistory(event);
+//                }
+
+
+
+
+            }
+            resultados.close();
+            sentencia.close();
+
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            throw new DAOException("SQL Task DAO Error");
+
+        }finally {
+            try {
+                connection.close();
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+                throw new DAOException("SQL Task DAO Error on close");
+
+            }
+        }
+
+        return listaTask;
+    }
+
 
     @Override
     public Task search(int id) throws DAOException {

@@ -2,20 +2,21 @@ package View;
 
 import Model.Employee;
 import Model.Exceptions.ServiceException;
+import Model.Project;
 import Model.Service.EmployeeService;
+import Model.Service.ProjectService;
 import Model.TableModel.EmployeeTableModel;
 import View.Components.MyButton;
+import View.Components.ProjectComboBox;
 import View.Components.Title;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 
-public class EmployeeList extends JPanel implements ActionListener {
+public class EmployeeList extends JPanel implements ActionListener, ItemListener {
     private Title title;
     private MyButton createEmployeeButton;
 
@@ -25,6 +26,7 @@ public class EmployeeList extends JPanel implements ActionListener {
     private JTable employeeTable;
     private JScrollPane scrollToTable;
     private Manager manager;
+    private ProjectComboBox projectComboBox;
 
     public EmployeeList(Manager manager) {
         this.manager = manager;
@@ -33,16 +35,19 @@ public class EmployeeList extends JPanel implements ActionListener {
 
     public void armar() {
 
-        Employee e = new Employee("FIrst", "Last", 12.4, 123123,0);
         EmployeeService employeeService = new EmployeeService();
-
+        ProjectService projectService = new ProjectService();
         List<Employee> listEmployee = new ArrayList<>();
+        Vector<Project> projectList= new Vector<>();
+
         try {
-            listEmployee = employeeService.list();
+            List<Project> projects= projectService.list();
+            projectList.addAll(projects);
+
+            listEmployee = employeeService.list(projects.get(0).getId());
         } catch (ServiceException ex) {
             ex.printStackTrace();
         }
-        listEmployee.add(e);
         employeeTaleModel = new EmployeeTableModel(listEmployee);
         employeeTable = new JTable(employeeTaleModel);
         employeeTable.addMouseListener(new MouseAdapter() {
@@ -60,6 +65,9 @@ public class EmployeeList extends JPanel implements ActionListener {
         scrollToTable = new JScrollPane(employeeTable);
         this.add(scrollToTable);
 
+        projectComboBox = new ProjectComboBox(projectList);
+        projectComboBox.addItemListener(this);
+        this.add(projectComboBox);
         this.title = new Title("Employee");
         this.createEmployeeButton = new MyButton("Create Employee");
         // TODO: this can be part of a wrapper;
@@ -85,6 +93,23 @@ public class EmployeeList extends JPanel implements ActionListener {
         }
         if(actionEvent.getSource() == this.createEmployeeButton){
             this.manager.redirectToEmployeeCreate();
+        }
+
+    }
+
+    @Override
+    public void itemStateChanged(ItemEvent e) {
+        // if the state combobox is changed
+        if(e.getSource() == this.projectComboBox){
+            System.out.println(((Project)this.projectComboBox.getSelectedItem()).getId());
+            EmployeeService employeeService = new EmployeeService();
+            try {
+                this.employeeTaleModel.setContenido(employeeService.list(((Project)this.projectComboBox.getSelectedItem()).getId()));
+
+            } catch (ServiceException ex) {
+                ex.printStackTrace();
+            }
+            this.employeeTaleModel.fireTableDataChanged();
         }
     }
 }

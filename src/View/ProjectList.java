@@ -31,7 +31,6 @@ public class ProjectList extends JPanel implements ActionListener {
 
     public void armar() {
 
-        Project e = new Project(123, "Title");
         List<Project> listTask = new ArrayList<>();
         ProjectService taskService = new ProjectService();
 
@@ -41,7 +40,6 @@ public class ProjectList extends JPanel implements ActionListener {
             ex.printStackTrace();
         }
 
-        listTask.add(e);
         projectTableModel = new ProjectTableModel(listTask);
         taskTable = new JTable(projectTableModel);
         scrollToTable = new JScrollPane(taskTable);

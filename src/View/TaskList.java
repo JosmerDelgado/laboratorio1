@@ -2,21 +2,23 @@ package View;
 
 import Model.Employee;
 import Model.Exceptions.ServiceException;
+import Model.Project;
+import Model.Service.EmployeeService;
+import Model.Service.ProjectService;
 import Model.Service.TaskService;
 import Model.TableModel.TaskTableModel;
 import Model.Task;
 import View.Components.MyButton;
+import View.Components.ProjectComboBox;
 import View.Components.Title;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 
-public class TaskList extends JPanel implements ActionListener {
+public class TaskList extends JPanel implements ActionListener, ItemListener {
     private Title title;
     private MyButton createTaskButton;
 
@@ -26,6 +28,8 @@ public class TaskList extends JPanel implements ActionListener {
     private JTable taskTable;
     private JScrollPane scrollToTable;
     private Manager manager;
+    private ProjectComboBox projectComboBox;
+
 
     public TaskList(Manager manager) {
         this.manager = manager;
@@ -34,19 +38,20 @@ public class TaskList extends JPanel implements ActionListener {
 
     public void armar() {
 
-        Task e = new Task(123, "Title");
-        Employee employee = new Employee("name", "Last", 12.123,123,0);
-        e.setAssigned(employee);
         List<Task> listTask = new ArrayList<>();
         TaskService taskService = new TaskService();
+        ProjectService projectService = new ProjectService();
+
+        Vector<Project> projectList= new Vector<>();
+
 
         try {
             listTask = taskService.list();
+            projectList.addAll(projectService.list());
         } catch (ServiceException ex) {
             ex.printStackTrace();
         }
 
-        listTask.add(e);
         taskTableModel = new TaskTableModel(listTask);
         taskTable = new JTable(taskTableModel);
         scrollToTable = new JScrollPane(taskTable);
@@ -65,6 +70,10 @@ public class TaskList extends JPanel implements ActionListener {
         });
 
         this.add(scrollToTable);
+
+        projectComboBox = new ProjectComboBox(projectList);
+        projectComboBox.addItemListener(this);
+        this.add(projectComboBox);
 
         this.title = new Title("Task List");
         this.createTaskButton = new MyButton("Create Task");
@@ -91,6 +100,22 @@ public class TaskList extends JPanel implements ActionListener {
         }
         if(actionEvent.getSource() == this.createTaskButton){
             this.manager.redirectToTaskCreate();
+        }
+    }
+
+    @Override
+    public void itemStateChanged(ItemEvent e) {
+        // if the state combobox is changed
+        if(e.getSource() == this.projectComboBox){
+            System.out.println(((Project)this.projectComboBox.getSelectedItem()).getId());
+            TaskService employeeService = new TaskService();
+            try {
+                this.taskTableModel.setContenido(employeeService.list(((Project)this.projectComboBox.getSelectedItem()).getId()));
+
+            } catch (ServiceException ex) {
+                ex.printStackTrace();
+            }
+            this.taskTableModel.fireTableDataChanged();
         }
     }
 }

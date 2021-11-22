@@ -10,7 +10,7 @@ public class ConnectionManager {
 
         try {
             Class.forName("org.h2.Driver");
-             connection = DriverManager.getConnection("jdbc:h2:~/test", "sa", "");
+             connection = DriverManager.getConnection("jdbc:h2:"+System.getProperty("user.dir")+"/DDBB/test", "sa", "");
 
         } catch (ClassNotFoundException | SQLException e) {
             e.printStackTrace();
