@@ -1,17 +1,21 @@
 package Model;
 
 public class Project {
-    private int id;
+    private Integer id;
     private String name;
     private String description;
     private Task[] tasks;
     private Employee[] employees;
-    private int companyId;
+    private Integer companyId;
 
     public Project(int id, String name) {
         this.id = id;
         this.name = name;
 
+    }
+
+    public Project(int id){
+        this(id,"");
     }
 
     public int getCompanyId() {
@@ -54,7 +58,7 @@ public class Project {
         this.employees = employees;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 

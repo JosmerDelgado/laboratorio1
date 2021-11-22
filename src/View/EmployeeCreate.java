@@ -18,6 +18,8 @@ public class EmployeeCreate  extends JPanel implements ActionListener {
     private Title title;
     private MyButton buttonBack;
     private MyButton createEmployeeButton;
+    private MyButton updateEmployeeButton;
+
     private InputWithLabel idInputWithLabel;
     private InputWithLabel nameInputWithLabel;
     private InputWithLabel lastNameInputWithLabel;
@@ -28,6 +30,11 @@ public class EmployeeCreate  extends JPanel implements ActionListener {
     public EmployeeCreate(Manager manager) {
         this.manager = manager;
         armar();
+    }
+
+    public EmployeeCreate(Manager manager, int id) {
+        this.manager = manager;
+        armar(id);
     }
 
     public void armar() {
@@ -66,30 +73,95 @@ public class EmployeeCreate  extends JPanel implements ActionListener {
 
     }
 
+    public void armar(int id) {
+        EmployeeService employeeService = new EmployeeService();
+        Employee employee;
+        try {
+            employee = employeeService.search(id);
+            System.out.println(employee);
+            this.title = new Title("Update Employee");
+
+            idInputWithLabel = new InputWithLabel("Document", employee.getIdentityNumber().toString() );
+            nameInputWithLabel = new InputWithLabel("Name", employee.getName());
+            lastNameInputWithLabel = new InputWithLabel("Last Name", employee.getLastName());
+            rateInputWithLabel = new InputWithLabel("Rate Hourly", employee.getRatePerHour().toString());
+            projectInputWithLabel = new InputWithLabel("Project Assigned", employee.getProjectId().toString());
+
+
+            this.updateEmployeeButton = new MyButton("Update Employee");
+            // TODO: this can be part of a wrapper;
+            this.buttonBack = new MyButton("Back");
+
+            this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+
+
+
+            this.add(this.title);
+
+            this.add(idInputWithLabel);
+            this.add(nameInputWithLabel);
+            this.add(lastNameInputWithLabel);
+            this.add(rateInputWithLabel);
+            this.add(this.projectInputWithLabel);
+
+            this.add(this.updateEmployeeButton);
+            // TODO: this can be part of a wrapper;
+            this.add(this.buttonBack);
+
+            this.updateEmployeeButton.addActionListener(this);
+
+            this.buttonBack.addActionListener(this);
+        } catch (ServiceException e) {
+            e.printStackTrace();
+        }
+
+
+
+    }
+
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
         if(actionEvent.getSource() == this.createEmployeeButton){
             String name = this.nameInputWithLabel.getInput().getText();
-            String lastName = this.nameInputWithLabel.getInput().getText();
+            String lastName = this.lastNameInputWithLabel.getInput().getText();
             Integer id = Integer.parseInt(this.idInputWithLabel.getInput().getText());
             Double rate = Double.parseDouble(this.rateInputWithLabel.getInput().getText());
+            int project = Integer.parseInt(this.projectInputWithLabel.getInput().getText());
 
-            Employee employee = new Employee(name, lastName, rate, id);
+            Employee employee = new Employee(name, lastName, rate, id, project);
             System.out.println(employee);
             EmployeeService employeeService = new EmployeeService();
             try {
-                Integer projectId;
-                String project = this.projectInputWithLabel.getInput().getText();
-                if(!project.equals("")){
-                    projectId = Integer.parseInt(project);
-                    employeeService.create(employee, projectId);
-                } else {
-                    employeeService.create(employee);
 
-                }
+
+                employeeService.create(employee);
+
             } catch (ServiceException e) {
                 e.printStackTrace();
             }
+        }
+
+        if(actionEvent.getSource() == this.updateEmployeeButton){
+            String name = this.nameInputWithLabel.getInput().getText();
+            String lastName = this.lastNameInputWithLabel.getInput().getText();
+            Integer id = Integer.parseInt(this.idInputWithLabel.getInput().getText());
+            Double rate = Double.parseDouble(this.rateInputWithLabel.getInput().getText());
+            int project = Integer.parseInt(this.projectInputWithLabel.getInput().getText());
+
+            Employee employee = new Employee(name, lastName, rate, id, project);
+            System.out.println(employee);
+            EmployeeService employeeService = new EmployeeService();
+            try {
+
+
+                employeeService.update(employee);
+
+            } catch (ServiceException e) {
+                e.printStackTrace();
+            }
+        }
+        if(actionEvent.getSource() == this.buttonBack){
+            this.manager.redirectToMain();
         }
     }
 }

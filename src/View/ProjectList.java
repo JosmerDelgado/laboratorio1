@@ -1,44 +1,39 @@
 package View;
 
-import Model.Employee;
 import Model.Exceptions.ServiceException;
-import Model.Service.TaskService;
-import Model.TableModel.TaskTableModel;
-import Model.Task;
+import Model.Project;
+import Model.Service.ProjectService;
+import Model.TableModel.ProjectTableModel;
 import View.Components.MyButton;
 import View.Components.Title;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TaskList extends JPanel implements ActionListener {
+public class ProjectList extends JPanel implements ActionListener {
     private Title title;
     private MyButton createTaskButton;
 
     // TODO: this can be part of a wrapper;
     private MyButton buttonBack;
-    private TaskTableModel taskTableModel;
+    private ProjectTableModel projectTableModel;
     private JTable taskTable;
     private JScrollPane scrollToTable;
     private Manager manager;
 
-    public TaskList(Manager manager) {
+    public ProjectList(Manager manager) {
         this.manager = manager;
         armar();
     }
 
     public void armar() {
 
-        Task e = new Task(123, "Title");
-        Employee employee = new Employee("name", "Last", 12.123,123,0);
-        e.setAssigned(employee);
-        List<Task> listTask = new ArrayList<>();
-        TaskService taskService = new TaskService();
+        Project e = new Project(123, "Title");
+        List<Project> listTask = new ArrayList<>();
+        ProjectService taskService = new ProjectService();
 
         try {
             listTask = taskService.list();
@@ -47,27 +42,13 @@ public class TaskList extends JPanel implements ActionListener {
         }
 
         listTask.add(e);
-        taskTableModel = new TaskTableModel(listTask);
-        taskTable = new JTable(taskTableModel);
+        projectTableModel = new ProjectTableModel(listTask);
+        taskTable = new JTable(projectTableModel);
         scrollToTable = new JScrollPane(taskTable);
-
-        taskTable.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if(e.getClickCount() == 1){
-                    JTable target = (JTable)e.getSource();
-                    int row=taskTable.rowAtPoint(e.getPoint());
-                    int selectedId = (int)taskTable.getValueAt(row, 0);
-                    System.out.println(selectedId);
-                    manager.redirectToTaskEdit(selectedId);
-                }
-            }
-        });
-
         this.add(scrollToTable);
 
-        this.title = new Title("Task List");
-        this.createTaskButton = new MyButton("Create Task");
+        this.title = new Title("Project List");
+        this.createTaskButton = new MyButton("Create Project");
         // TODO: this can be part of a wrapper;
         this.buttonBack = new MyButton("Back");
 
@@ -90,7 +71,7 @@ public class TaskList extends JPanel implements ActionListener {
             this.manager.redirectToMain();
         }
         if(actionEvent.getSource() == this.createTaskButton){
-            this.manager.redirectToTaskCreate();
+            this.manager.redirectToProjectCreate();
         }
     }
 }

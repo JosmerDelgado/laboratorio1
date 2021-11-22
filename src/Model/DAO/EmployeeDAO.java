@@ -20,11 +20,12 @@ public class EmployeeDAO implements IDAO<Employee> {
             connection = ConnectionManager.conect();
             //2 Crear una sentencia
 
-            sentenciaPS = connection.prepareStatement("INSERT INTO EMPLOYEE (NAME, ID, LAST_NAME, RATE_PER_HOUR) VALUES(?,?,?,?)");
+            sentenciaPS = connection.prepareStatement("INSERT INTO EMPLOYEE (NAME, ID, LAST_NAME, RATE_PER_HOUR, PROJECT_ID) VALUES(?,?,?,?,?)");
             sentenciaPS.setString(1,persona.getName());
             sentenciaPS.setInt(2,persona.getIdentityNumber());
             sentenciaPS.setString(3,persona.getLastName());
             sentenciaPS.setDouble(4,persona.getRatePerHour());
+            sentenciaPS.setInt(5,persona.getProjectId());
 
 
             //3 Ejecutar una sentencia SQL
@@ -131,9 +132,14 @@ public class EmployeeDAO implements IDAO<Employee> {
 
             //2 Crear una sentencia
 
-            sentenciaPS = connection.prepareStatement("UPDATE EMPLOYEE SET NAME=? WHERE ID=?");
+            sentenciaPS = connection.prepareStatement("UPDATE EMPLOYEE SET NAME=?, LAST_NAME=?,PROJECT_ID=?,RATE_PER_HOUR=? WHERE ID=?");
             sentenciaPS.setString(1,persona.getName());
-            sentenciaPS.setInt(2,persona.getIdentityNumber());
+            sentenciaPS.setString(2,persona.getLastName());
+
+            sentenciaPS.setInt(3,persona.getProjectId());
+            sentenciaPS.setDouble(4,persona.getRatePerHour());
+
+            sentenciaPS.setInt(5,persona.getIdentityNumber());
 
             //3 Ejecutar una sentencia SQL
             int registrosModificados = sentenciaPS.executeUpdate();
@@ -177,7 +183,8 @@ public class EmployeeDAO implements IDAO<Employee> {
                 Employee persona = new Employee(resultados.getString("NAME"),
                         resultados.getString("LAST_NAME"),
                         resultados.getDouble("RATE_PER_HOUR"),
-                        resultados.getInt("ID"));
+                        resultados.getInt("ID"),
+                        resultados.getInt("PROJECT_ID"));
 
 
                 listaPersonas.add(persona);
@@ -223,7 +230,8 @@ public class EmployeeDAO implements IDAO<Employee> {
                 persona = new Employee(resultados.getString("NAME"),
                         resultados.getString("LAST_NAME"),
                         resultados.getDouble("RATE_PER_HOUR"),
-                        resultados.getInt("ID"));
+                        resultados.getInt("ID"),
+                        resultados.getInt("PROJECT_ID"));
             }
             resultados.close();
             sentenciaPS.close();

@@ -11,10 +11,17 @@ public class InputWithLabel extends JPanel {
         armar(text);
     }
 
+    public InputWithLabel(String text, String value){
+        armar(text, value);
+    }
     public void armar(String text) {
+        armar(text,"");
+    }
+
+    public void armar(String text, String value) {
         this.setLayout(new GridLayout(1,2));
         this.label = new JLabel(text);
-        this.input = new JTextField();
+        this.input = new JTextField(value);
         this.add(label);
         this.add(input);
     }

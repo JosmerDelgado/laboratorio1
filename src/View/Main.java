@@ -11,8 +11,8 @@ public class Main extends JPanel implements ActionListener {
     private Title title;
     private MyButton buttonTaskList;
     private MyButton buttonEmployeeList;
-    private MyButton buttonCreateProject;
-    private MyButton buttonCreateCompany;
+    private MyButton buttonProjectList;
+//    private MyButton buttonCreateCompany;
 
     // TODO: this can be part of a wrapper;
     private MyButton buttonBack;
@@ -26,8 +26,8 @@ public class Main extends JPanel implements ActionListener {
         this.title = new Title("HOME");
         this.buttonTaskList = new MyButton("Task List");
         this.buttonEmployeeList = new MyButton("Employee List");
-        this.buttonCreateCompany = new MyButton("Create Company");
-        this.buttonCreateProject = new MyButton("Create Proyect");
+//        this.buttonCreateCompany = new MyButton("Create Company");
+        this.buttonProjectList = new MyButton("Project List");
 
         // TODO: this can be part of a wrapper;
         this.buttonBack = new MyButton("Back");
@@ -36,17 +36,17 @@ public class Main extends JPanel implements ActionListener {
         this.add(this.title);
         this.add(this.buttonTaskList);
         this.add(this.buttonEmployeeList);
-        this.add(this.buttonCreateCompany);
+//        this.add(this.buttonCreateCompany);
 
-        this.add(this.buttonCreateProject);
+        this.add(this.buttonProjectList);
         // TODO: this can be part of a wrapper;
         this.add(this.buttonBack);
 
         this.buttonTaskList.addActionListener(this);
         this.buttonEmployeeList.addActionListener(this);
-        this.buttonCreateProject.addActionListener(this);
+        this.buttonProjectList.addActionListener(this);
         this.buttonBack.addActionListener(this);
-        this.buttonCreateCompany.addActionListener(this);
+//        this.buttonCreateCompany.addActionListener(this);
 
     }
 
@@ -59,11 +59,12 @@ public class Main extends JPanel implements ActionListener {
             this.manager.redirectToHome();
         } else if(actionEvent.getSource() == this.buttonTaskList){
             this.manager.redirectToTask();
-        } else if(actionEvent.getSource() == this.buttonCreateProject){
-            this.manager.redirectToProjectCreate();
-        } else if(actionEvent.getSource() == this.buttonCreateCompany){
-            this.manager.redirectToCompanyCreate();
+        } else if(actionEvent.getSource() == this.buttonProjectList){
+            this.manager.redirectToProjectList();
         }
+//        else if(actionEvent.getSource() == this.buttonCreateCompany){
+//            this.manager.redirectToCompanyCreate();
+//        }
     }
 
 

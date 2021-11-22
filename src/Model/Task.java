@@ -14,6 +14,7 @@ public class Task {
     private Integer timeConsumed = 0;
     private Employee assigned;
     private List<EventTask> eventHistory;
+    private Project project;
 
 
     public Task(Integer id, String title) {
@@ -97,5 +98,13 @@ public class Task {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public Project getProject() {
+        return project;
+    }
+
+    public void setProject(Project project) {
+        this.project = project;
     }
 }

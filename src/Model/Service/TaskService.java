@@ -20,6 +20,16 @@ public class TaskService implements IService<Task>{
         }
     }
 
+    public void create(Task task, int projectId) throws ServiceException {
+        TaskDAO taskDAO = new TaskDAO();
+        try {
+            taskDAO.create(task, projectId);
+        } catch (DAOException e) {
+            e.printStackTrace();
+            throw new ServiceException("Error Service");
+        }
+    }
+
     @Override
     public void delete(int id) throws ServiceException {
         TaskDAO taskDAO = new TaskDAO();

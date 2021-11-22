@@ -66,9 +66,31 @@ public class Manager {
         frame.setVisible(true);
     }
 
+    public void redirectToEmployeeEdit(int employeeId) {
+
+        EmployeeCreate employeeCreate = new EmployeeCreate(this, employeeId);
+        frame.getContentPane().removeAll();
+        frame.getContentPane().add(employeeCreate);
+        frame.getContentPane().validate();//RE-dispongo los elementos segun el layout
+        frame.getContentPane().repaint();//RE-pinto los elementos dispuestos en el paso anterior
+        frame.pack();
+        frame.setVisible(true);
+    }
+
     public void redirectToTaskCreate() {
 
         TaskCreate main = new TaskCreate(this);
+        frame.getContentPane().removeAll();
+        frame.getContentPane().add(main);
+        frame.getContentPane().validate();//RE-dispongo los elementos segun el layout
+        frame.getContentPane().repaint();//RE-pinto los elementos dispuestos en el paso anterior
+        frame.pack();
+        frame.setVisible(true);
+    }
+
+    public void redirectToTaskEdit(int id) {
+
+        TaskCreate main = new TaskCreate(this, id);
         frame.getContentPane().removeAll();
         frame.getContentPane().add(main);
         frame.getContentPane().validate();//RE-dispongo los elementos segun el layout
@@ -93,6 +115,17 @@ public class Manager {
         CompanyCreate company = new CompanyCreate(this);
         frame.getContentPane().removeAll();
         frame.getContentPane().add(company);
+        frame.getContentPane().validate();//RE-dispongo los elementos segun el layout
+        frame.getContentPane().repaint();//RE-pinto los elementos dispuestos en el paso anterior
+        frame.pack();
+        frame.setVisible(true);
+    }
+
+    public void redirectToProjectList() {
+
+        ProjectList project = new ProjectList(this);
+        frame.getContentPane().removeAll();
+        frame.getContentPane().add(project);
         frame.getContentPane().validate();//RE-dispongo los elementos segun el layout
         frame.getContentPane().repaint();//RE-pinto los elementos dispuestos en el paso anterior
         frame.pack();

@@ -5,6 +5,7 @@ public class Employee {
     private String lastName;
     private Double ratePerHour;
     private Integer identityNumber;
+    private Integer projectId;
 
 
     @Override
@@ -17,10 +18,23 @@ public class Employee {
                 '}';
     }
 
-    public Employee(String name, String lastName, Double ratePerHour, Integer identityNumber) {
+    public Employee(){
+        name="";
+        lastName="";
+        ratePerHour=0.0;
+        identityNumber=0;
+        projectId=0;
+    }
+
+    public Employee(String name, String lastName, Double ratePerHour, Integer identityNumber, Integer projectId) {
         this.name = name;
         this.lastName = lastName;
         this.ratePerHour = ratePerHour;
+        this.identityNumber = identityNumber;
+        this.projectId = projectId;
+    }
+
+    public Employee(Integer identityNumber) {
         this.identityNumber = identityNumber;
     }
 
@@ -54,5 +68,13 @@ public class Employee {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Integer getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(Integer projectId) {
+        this.projectId = projectId;
     }
 }

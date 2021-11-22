@@ -20,6 +20,7 @@ public class ProjectCreate extends JPanel implements ActionListener {
     private MyButton createTaskButton;
     private InputWithLabel idInputWithLabel;
     private InputWithLabel titleInputWithLabel;
+//    private InputWithLabel companyInputWithLabel;
 
     public ProjectCreate(Manager manager) {
         this.manager = manager;
@@ -27,11 +28,12 @@ public class ProjectCreate extends JPanel implements ActionListener {
     }
 
     public void armar() {
-        this.title = new Title("New Task");
+        this.title = new Title("New Project");
 
         idInputWithLabel = new InputWithLabel("ID");
         titleInputWithLabel = new InputWithLabel("Title");
         this.createTaskButton = new MyButton("Create Task");
+//        companyInputWithLabel = new InputWithLabel("Company Id");
         // TODO: this can be part of a wrapper;
         this.buttonBack = new MyButton("Back");
 
@@ -43,7 +45,7 @@ public class ProjectCreate extends JPanel implements ActionListener {
 
         this.add(idInputWithLabel);
         this.add(titleInputWithLabel);
-
+//        this.add(companyInputWithLabel);
         this.add(this.createTaskButton);
         // TODO: this can be part of a wrapper;
         this.add(this.buttonBack);
@@ -59,8 +61,9 @@ public class ProjectCreate extends JPanel implements ActionListener {
         if(actionEvent.getSource() == this.createTaskButton){
             Integer id = Integer.parseInt(this.idInputWithLabel.getInput().getText());
             String title = this.titleInputWithLabel.getInput().getText();
-
+            Integer company =  0;//Integer.parseInt(this.companyInputWithLabel.getInput().getText());
             Project project = new Project(id, title);
+            project.setCompanyId(company);
             System.out.println(project);
             ProjectService projectService = new ProjectService();
             try {
@@ -69,5 +72,9 @@ public class ProjectCreate extends JPanel implements ActionListener {
                 e.printStackTrace();
             }
         }
+        if(actionEvent.getSource() == this.buttonBack){
+            this.manager.redirectToMain();
+        }
+
     }
 }

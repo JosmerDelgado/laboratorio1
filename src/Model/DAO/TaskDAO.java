@@ -1,10 +1,7 @@
 package Model.DAO;
 
-import Model.Company;
-import Model.Employee;
-import Model.EventTask;
+import Model.*;
 import Model.Exceptions.DAOException;
-import Model.Task;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -24,12 +21,54 @@ public class TaskDAO implements IDAO<Task>{
             connection = ConnectionManager.conect();
             //2 Crear una sentencia
 
-            sentenciaPS = connection.prepareStatement("INSERT INTO TASK (TITLE, DESCRIPTION, ASSIGNED, ESTIMATION) VALUES(?,?,?,?)");
+            sentenciaPS = connection.prepareStatement("INSERT INTO TASK (TITLE, DESCRIPTION, ASSIGNED, ESTIMATION, ID) VALUES(?,?,?,?,?)");
             sentenciaPS.setString(1,task.getTitle());
             sentenciaPS.setString(2,task.getDescription());
 
             sentenciaPS.setInt(3,task.getAssigned().getIdentityNumber());
             sentenciaPS.setInt(4,task.getEstimation());
+            sentenciaPS.setInt(5, task.getId());
+
+
+            //3 Ejecutar una sentencia SQL
+            int registrosModificados = sentenciaPS.executeUpdate();
+            System.out.println("Registros agregados: " + registrosModificados);
+
+            sentenciaPS.close();
+
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            throw new DAOException("SQL Task DAO Error");
+
+        } finally {
+            try {
+                connection.close();
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+                throw new DAOException("SQL Task DAO Error on close");
+
+            }
+        }
+    }
+
+    public void create(Task task, int projectId) throws DAOException {
+        Connection connection = null;
+
+        PreparedStatement sentenciaPS;
+        try {
+            //1 Levantar el driver y Conectarnos
+            connection = ConnectionManager.conect();
+            //2 Crear una sentencia
+
+            sentenciaPS = connection.prepareStatement("INSERT INTO TASK (TITLE, DESCRIPTION, ASSIGNED, ESTIMATION, PROJECT_ID, ID) VALUES(?,?,?,?,?,?)");
+            sentenciaPS.setString(1,task.getTitle());
+            sentenciaPS.setString(2,task.getDescription());
+
+            sentenciaPS.setInt(3,task.getAssigned().getIdentityNumber());
+            sentenciaPS.setInt(4,task.getEstimation());
+            sentenciaPS.setInt(5, projectId);
+            sentenciaPS.setInt(6, task.getId());
+
 
 
             //3 Ejecutar una sentencia SQL
@@ -100,8 +139,9 @@ public class TaskDAO implements IDAO<Task>{
             sentenciaPS = connection.prepareStatement("UPDATE TASK SET TITLE=?, DESCRIPTION=?, ASSIGNED=?, ESTIMATION=? WHERE ID=?");
             sentenciaPS.setString(1,task.getTitle());
             sentenciaPS.setString(2,task.getDescription());
-            sentenciaPS.setInt(2,task.getAssigned().getIdentityNumber());
-            sentenciaPS.setInt(2,task.getEstimation());
+            sentenciaPS.setInt(3,task.getAssigned().getIdentityNumber());
+            sentenciaPS.setInt(4,task.getEstimation());
+            sentenciaPS.setInt(5,task.getId());
 
             //3 Ejecutar una sentencia SQL
             int registrosModificados = sentenciaPS.executeUpdate();
@@ -137,26 +177,26 @@ public class TaskDAO implements IDAO<Task>{
             //2 Crear una sentencia
             sentencia = connection.createStatement();
             //3 Ejecutar una sentencia SQL
-            ResultSet resultados =  sentencia.executeQuery("SELECT * FROM TASK T JOIN EMPLOYEE E on E.ID = T.ASSIGNED " +
-                    "JOIN EVENT_TASK ET on T.ID = ET.TASK_ID " +
-                    "JOIN EMPLOYEE E2 on E2.ID = ET.EMPLOYEE_ID");
+            ResultSet resultados =  sentencia.executeQuery("SELECT T.ID ID, T.TITLE TITLE, T.DESCRIPTION DESCRIPTION, T.ESTIMATION ESTIMATION," +
+                    "E.ID ID_EMPLOYEE, E.NAME NAME, E.LAST_NAME LAST_NAME, E.RATE_PER_HOUR RATE_PER_HOUR, E.PROJECT_ID EMPLOYEE_PROJECT FROM TASK T JOIN EMPLOYEE E on E.ID = T.ASSIGNED");
             //4 Evaluar resultados
             while(resultados.next()){
 
-                int position = getTaskListed(listaTask, resultados.getInt("T.ID"));
-                Employee employeeTask = new Employee(resultados.getString("E2.NAME"),
-                        resultados.getString("E2.LAST_NAME"),
-                        resultados.getDouble("E2.RATE_PER_HOUR"),
-                        resultados.getInt("E2.ID"));
-                EventTask event = new EventTask(resultados.getString("ET.ACTION"),employeeTask);
-                if(position == -1){
-                    Employee persona = new Employee(resultados.getString("E.NAME"),
-                            resultados.getString("E.LAST_NAME"),
-                            resultados.getDouble("E.RATE_PER_HOUR"),
-                            resultados.getInt("E.ID"));
+//                int position = getTaskListed(listaTask, resultados.getInt("T.ID"));
+//                Employee employeeTask = new Employee(resultados.getString("E.NAME"),
+//                        resultados.getString("E.LAST_NAME"),
+//                        resultados.getDouble("E.RATE_PER_HOUR"),
+//                        resultados.getInt("ID_EMPLOYEE"));
+//                EventTask event = new EventTask(resultados.getString("ET.ACTION"),employeeTask);
+//                if(position == -1){
+                    Employee persona = new Employee(resultados.getString("NAME"),
+                            resultados.getString("LAST_NAME"),
+                            resultados.getDouble("RATE_PER_HOUR"),
+                            resultados.getInt("ID_EMPLOYEE"),
+                            resultados.getInt("EMPLOYEE_PROJECT"));
                     List<EventTask> eventList = new ArrayList<>();
-                    eventList.add(event);
-                    Task task = new Task(resultados.getInt("T.ID"),
+//                    eventList.add(event);
+                    Task task = new Task(resultados.getInt("ID"),
                             resultados.getString("TITLE")
                             );
                     task.setDescription(resultados.getString("DESCRIPTION"));
@@ -165,9 +205,9 @@ public class TaskDAO implements IDAO<Task>{
                     task.setEventHistory(eventList);
 
                     listaTask.add(task);
-                } else {
-                    listaTask.get(position).addEventHistory(event);
-                }
+//                } else {
+////                    listaTask.get(position).addEventHistory(event);
+//                }
 
 
 
@@ -204,9 +244,12 @@ public class TaskDAO implements IDAO<Task>{
 
             //2 Crear una sentencia
 
-            sentenciaPS = connection.prepareStatement("SELECT * FROM TASK T JOIN EMPLOYEE E on E.ID = T.ASSIGNED " +
-                    "JOIN EVENT_TASK ET on T.ID = ET.TASK_ID " +
-                    "JOIN EMPLOYEE E2 on E2.ID = ET.EMPLOYEE_ID WHERE T.ID=?");
+            sentenciaPS = connection.prepareStatement("SELECT T.ID ID, T.TITLE TITLE, T.DESCRIPTION DESCRIPTION, " +
+                    "T.PROJECT_ID TASK_PROJECT, " +
+                    "T.ESTIMATION ESTIMATION, E.ID ID_EMPLOYEE, E.NAME NAME, E.LAST_NAME LAST_NAME, " +
+                    "E.RATE_PER_HOUR RATE_PER_HOUR, E.PROJECT_ID EMPLOYEE_PROJECT " +
+                    "FROM TASK T JOIN EMPLOYEE E on E.ID = T.ASSIGNED WHERE T.ID=?");
+
             sentenciaPS.setInt(1,id);
 
             //3 Ejecutar una sentencia SQL
@@ -216,24 +259,26 @@ public class TaskDAO implements IDAO<Task>{
                 Employee persona = new Employee(resultados.getString("NAME"),
                         resultados.getString("LAST_NAME"),
                         resultados.getDouble("RATE_PER_HOUR"),
-                        resultados.getInt("E.ID"));
-                Employee employeeTask = new Employee(resultados.getString("E2.NAME"),
-                        resultados.getString("E2.LAST_NAME"),
-                        resultados.getDouble("E2.RATE_PER_HOUR"),
-                        resultados.getInt("E2.ID"));
-                EventTask event = new EventTask(resultados.getString("ET.ACTION"),employeeTask);
-                if(task == null){
-                    List<EventTask> eventList = new ArrayList<>();
-                    eventList.add(event);
-                    task = new Task(resultados.getInt("T.ID"),
+                        resultados.getInt("ID_EMPLOYEE"), resultados.getInt("EMPLOYEE_PROJECT"));
+//                Employee employeeTask = new Employee(resultados.getString("E2.NAME"),
+//                        resultados.getString("E2.LAST_NAME"),
+//                        resultados.getDouble("E2.RATE_PER_HOUR"),
+//                        resultados.getInt("E2.ID"), resultados.getInt("E2.PROJECT_ID"));
+//                EventTask event = new EventTask(resultados.getString("ET.ACTION"),employeeTask);
+//                if(task == null){
+//                    List<EventTask> eventList = new ArrayList<>();
+//                    eventList.add(event);
+                    task = new Task(resultados.getInt("ID"),
                             resultados.getString("TITLE"));
                     task.setDescription(resultados.getString("DESCRIPTION"));
                     task.setEstimation(resultados.getInt("ESTIMATION"));
                     task.setAssigned(persona);
-                    task.setEventHistory(eventList);
-                } else {
-                    task.addEventHistory(event);
-                }
+                    Project project = new Project(resultados.getInt("TASK_PROJECT"));
+                    task.setProject(project);
+//                    task.setEventHistory(eventList);
+//                } else {
+//                    task.addEventHistory(event);
+//                }
 
             }
             resultados.close();
