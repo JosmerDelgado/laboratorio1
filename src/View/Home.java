@@ -6,6 +6,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
 
 class LoginForm extends JPanel {
 
@@ -133,9 +134,7 @@ public class Home extends JPanel implements ActionListener {
             this.manager.redirectToMain();
         }
         if(actionEvent.getSource() == this.botoneraPanel.getCancelBtn()){
-            System.out.println();
-            JOptionPane.showMessageDialog(null, "My Goodness, this is so concise");
-
+            manager.getFrame().dispose();
         }
     }
 

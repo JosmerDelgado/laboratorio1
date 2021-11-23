@@ -48,13 +48,15 @@ public class EmployeeList extends JPanel implements ActionListener, ItemListener
         } catch (ServiceException ex) {
             ex.printStackTrace();
         }
+        this.title = new Title("Employee List");
+        this.add(this.title);
+
         employeeTaleModel = new EmployeeTableModel(listEmployee);
         employeeTable = new JTable(employeeTaleModel);
         employeeTable.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if(e.getClickCount() == 1){
-                    JTable target = (JTable)e.getSource();
                     int row=employeeTable.rowAtPoint(e.getPoint());
                     int selectedId = (int)employeeTable.getValueAt(row, 0);
                     System.out.println(selectedId);
@@ -65,17 +67,20 @@ public class EmployeeList extends JPanel implements ActionListener, ItemListener
         scrollToTable = new JScrollPane(employeeTable);
         this.add(scrollToTable);
 
+        Title comboTitle = new Title("Filter By Project");
+        this.add(comboTitle);
+
         projectComboBox = new ProjectComboBox(projectList);
         projectComboBox.addItemListener(this);
         this.add(projectComboBox);
-        this.title = new Title("Employee");
+
+
         this.createEmployeeButton = new MyButton("Create Employee");
         // TODO: this can be part of a wrapper;
         this.buttonBack = new MyButton("Back");
 
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
-        this.add(this.title);
         this.add(this.createEmployeeButton);
         // TODO: this can be part of a wrapper;
         this.add(this.buttonBack);

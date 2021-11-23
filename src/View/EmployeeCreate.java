@@ -101,10 +101,13 @@ public class EmployeeCreate  extends JPanel implements ActionListener {
         Employee employee;
         try {
             employee = employeeService.search(id);
-            System.out.println(employee);
+
+
             this.title = new Title("Update Employee");
 
             idInputWithLabel = new InputWithLabel("Document", employee.getIdentityNumber().toString() );
+            idInputWithLabel.getInput().setEnabled(false);
+
             nameInputWithLabel = new InputWithLabel("Name", employee.getName());
             lastNameInputWithLabel = new InputWithLabel("Last Name", employee.getLastName());
             rateInputWithLabel = new InputWithLabel("Rate Hourly", employee.getRatePerHour().toString());
@@ -134,8 +137,11 @@ public class EmployeeCreate  extends JPanel implements ActionListener {
             this.updateEmployeeButton.addActionListener(this);
 
             this.buttonBack.addActionListener(this);
+
         } catch (ServiceException e) {
             e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error trying to get Employee");
+            manager.redirectToEmployee();
         }
 
 
@@ -158,9 +164,10 @@ public class EmployeeCreate  extends JPanel implements ActionListener {
 
 
                 employeeService.create(employee);
-
+                manager.redirectToEmployee();
             } catch (ServiceException e) {
                 e.printStackTrace();
+                JOptionPane.showMessageDialog(null, "Error trying to create Employee");
             }
         }
 
@@ -179,13 +186,16 @@ public class EmployeeCreate  extends JPanel implements ActionListener {
 
 
                 employeeService.update(employee);
+                manager.redirectToEmployee();
 
             } catch (ServiceException e) {
                 e.printStackTrace();
+                JOptionPane.showMessageDialog(null, "Error trying to update Employee");
+
             }
         }
         if(actionEvent.getSource() == this.buttonBack){
-            this.manager.redirectToMain();
+            this.manager.redirectToEmployee();
         }
     }
 }

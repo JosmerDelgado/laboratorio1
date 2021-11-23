@@ -172,7 +172,7 @@ public class ProjectDAO implements IDAO<Project>{
             ResultSet resultados =  sentencia.executeQuery("SELECT * FROM PROJECT");
             //4 Evaluar resultados
             while(resultados.next()){
-                project = new Project(resultados.getInt("ID"), resultados.getString("PROJECT"));
+                project = new Project(resultados.getInt("ID"), resultados.getString("NAME"));
                 project.setCompanyId( resultados.getInt("ID"));
             }
             resultados.close();

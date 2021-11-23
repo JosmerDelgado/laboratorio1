@@ -12,11 +12,13 @@ import View.Components.*;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.util.List;
 import java.util.Vector;
 
 
-public class TaskCreate  extends JPanel implements ActionListener {
+public class TaskCreate  extends JPanel implements ActionListener, ItemListener {
 
     private Manager manager;
     private Title title;
@@ -65,7 +67,7 @@ public class TaskCreate  extends JPanel implements ActionListener {
         estimationInputWithLabel = new InputWithLabel("Estimation");
         projectComboBox = new ProjectComboBox(projectVector);
         employeeComboBox = new EmployeeComboBox(employeeVector);
-
+        projectComboBox.addItemListener(this);
         this.createTaskButton = new MyButton("Create Task");
         // TODO: this can be part of a wrapper;
         this.buttonBack = new MyButton("Back");
@@ -102,7 +104,7 @@ public class TaskCreate  extends JPanel implements ActionListener {
         EmployeeService employeeService = new EmployeeService();
         try {
             projectVector.addAll(projectService.list());
-            employeeVector.addAll(employeeService.list(id));
+            employeeVector.addAll(employeeService.list());
         } catch (ServiceException e) {
             e.printStackTrace();
         }
@@ -111,13 +113,14 @@ public class TaskCreate  extends JPanel implements ActionListener {
             Task task = taskService.search(id);
 
             idInputWithLabel = new InputWithLabel("ID", task.getId().toString());
-            idInputWithLabel.setEnabled(false);
+            idInputWithLabel.getInput().setEnabled(false);
+
             titleInputWithLabel = new InputWithLabel("Title", task.getTitle());
 
             estimationInputWithLabel = new InputWithLabel("Estimation", task.getEstimation().toString());
             projectComboBox = new ProjectComboBox(projectVector, task.getProject());
             employeeComboBox = new EmployeeComboBox(employeeVector, task.getAssigned());
-
+            projectComboBox.addItemListener(this);
             this.updateTaskButton = new MyButton("Update Task");
             // TODO: this can be part of a wrapper;
             this.buttonBack = new MyButton("Back");
@@ -143,6 +146,10 @@ public class TaskCreate  extends JPanel implements ActionListener {
             this.buttonBack.addActionListener(this);
         } catch (ServiceException e) {
             e.printStackTrace();
+            manager.redirectToTask();
+
+            JOptionPane.showMessageDialog(null, "Error trying to get Task");
+
         }
 
 
@@ -153,20 +160,26 @@ public class TaskCreate  extends JPanel implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
         if(actionEvent.getSource() == this.createTaskButton){
-            Integer id = Integer.parseInt(this.idInputWithLabel.getInput().getText());
-            String title = this.titleInputWithLabel.getInput().getText();
-            Integer project = ((Project)this.projectComboBox.getSelectedItem()).getId();
-            Integer employee = this.employeeComboBox.getSelectedItem().getIdentityNumber();
-            Integer estimation = Integer.parseInt(this.estimationInputWithLabel.getInput().getText());
-            Task task = new Task(id, title);
-            System.out.println(task);
-            TaskService taskService = new TaskService();
-            task.setAssigned(new Employee(employee));
-            task.setEstimation(estimation);
             try {
-                taskService.create(task, project);
+                Integer id = Integer.parseInt(this.idInputWithLabel.getInput().getText());
+                String title = this.titleInputWithLabel.getInput().getText();
+                Project project = ((Project)this.projectComboBox.getSelectedItem());
+
+                Integer employee = this.employeeComboBox.getSelectedItem().getIdentityNumber();
+                Integer estimation = Integer.parseInt(this.estimationInputWithLabel.getInput().getText());
+                Task task = new Task(id, title);
+                task.setProject(project);
+                System.out.println(task);
+                TaskService taskService = new TaskService();
+                task.setAssigned(new Employee(employee));
+                task.setEstimation(estimation);
+                taskService.create(task);
+                manager.redirectToTask();
+
             } catch (ServiceException e) {
                 e.printStackTrace();
+                JOptionPane.showMessageDialog(null, "Error trying to create Task");
+
             }
 
         }
@@ -186,8 +199,12 @@ public class TaskCreate  extends JPanel implements ActionListener {
             task.setProject(project);
             try {
                 taskService.update(task);
+                manager.redirectToTask();
+
             } catch (ServiceException e) {
                 e.printStackTrace();
+                JOptionPane.showMessageDialog(null, "Error trying to update Task");
+
             }
 
         }
@@ -196,4 +213,8 @@ public class TaskCreate  extends JPanel implements ActionListener {
         }
     }
 
+    @Override
+    public void itemStateChanged(ItemEvent e) {
+
+    }
 }

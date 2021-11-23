@@ -17,7 +17,7 @@ public class Project {
     }
 
     public Project(int id){
-        this(id,"");
+        this.id = id;
     }
 
     @Override

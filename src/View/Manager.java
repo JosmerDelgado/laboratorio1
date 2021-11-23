@@ -12,6 +12,10 @@ public class Manager {
 
     }
 
+    public JFrame getFrame() {
+        return frame;
+    }
+
     public void redirectToHome(){
         Home home = new Home(this);
         frame.getContentPane().removeAll();
@@ -102,6 +106,17 @@ public class Manager {
     public void redirectToProjectCreate() {
 
         ProjectCreate project = new ProjectCreate(this);
+        frame.getContentPane().removeAll();
+        frame.getContentPane().add(project);
+        frame.getContentPane().validate();//RE-dispongo los elementos segun el layout
+        frame.getContentPane().repaint();//RE-pinto los elementos dispuestos en el paso anterior
+        frame.pack();
+        frame.setVisible(true);
+    }
+
+    public void redirectToProjectCreate(int id) {
+
+        ProjectCreate project = new ProjectCreate(this, id);
         frame.getContentPane().removeAll();
         frame.getContentPane().add(project);
         frame.getContentPane().validate();//RE-dispongo los elementos segun el layout

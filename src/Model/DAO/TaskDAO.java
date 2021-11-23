@@ -21,13 +21,15 @@ public class TaskDAO implements IDAO<Task>{
             connection = ConnectionManager.conect();
             //2 Crear una sentencia
 
-            sentenciaPS = connection.prepareStatement("INSERT INTO TASK (TITLE, DESCRIPTION, ASSIGNED, ESTIMATION, ID) VALUES(?,?,?,?,?)");
+            sentenciaPS = connection.prepareStatement("INSERT INTO TASK (TITLE, DESCRIPTION, ASSIGNED, ESTIMATION, ID, PROJECT_ID) VALUES(?,?,?,?,?,?)");
             sentenciaPS.setString(1,task.getTitle());
             sentenciaPS.setString(2,task.getDescription());
 
             sentenciaPS.setInt(3,task.getAssigned().getIdentityNumber());
             sentenciaPS.setInt(4,task.getEstimation());
             sentenciaPS.setInt(5, task.getId());
+
+            sentenciaPS.setInt(6, task.getProject().getId());
 
 
             //3 Ejecutar una sentencia SQL

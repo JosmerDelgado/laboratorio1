@@ -46,11 +46,18 @@ public class TaskList extends JPanel implements ActionListener, ItemListener {
 
 
         try {
-            listTask = taskService.list();
-            projectList.addAll(projectService.list());
+            List<Project> projects = projectService.list();
+            listTask = taskService.list(projects.get(0).getId());
+            projectList.addAll(projects);
+
         } catch (ServiceException ex) {
             ex.printStackTrace();
         }
+
+        this.title = new Title("Task List");
+
+        this.add(this.title);
+
 
         taskTableModel = new TaskTableModel(listTask);
         taskTable = new JTable(taskTableModel);
@@ -60,7 +67,6 @@ public class TaskList extends JPanel implements ActionListener, ItemListener {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if(e.getClickCount() == 1){
-                    JTable target = (JTable)e.getSource();
                     int row=taskTable.rowAtPoint(e.getPoint());
                     int selectedId = (int)taskTable.getValueAt(row, 0);
                     System.out.println(selectedId);
@@ -71,18 +77,18 @@ public class TaskList extends JPanel implements ActionListener, ItemListener {
 
         this.add(scrollToTable);
 
+        Title comboTitle = new Title("Filter By Project");
+        this.add(comboTitle);
         projectComboBox = new ProjectComboBox(projectList);
         projectComboBox.addItemListener(this);
         this.add(projectComboBox);
 
-        this.title = new Title("Task List");
         this.createTaskButton = new MyButton("Create Task");
         // TODO: this can be part of a wrapper;
         this.buttonBack = new MyButton("Back");
 
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
-        this.add(this.title);
         this.add(this.createTaskButton);
         // TODO: this can be part of a wrapper;
         this.add(this.buttonBack);
